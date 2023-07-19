@@ -1,0 +1,55 @@
+{
+  "version": "2.0.0",
+   "tasks": [    
+    {
+        "label": "build",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+            "build",
+            "${workspaceFolder}/logger.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "type": "docker-build",
+        "label": "docker-build: debug",
+        "dependsOn": [
+            "build"
+        ],
+        "dockerBuild": {
+            "tag": "logger:dev",
+            "target": "base",
+            "dockerfile": "${workspaceFolder}/Dockerfile",
+            "context": "${workspaceFolder}",
+            "pull": true
+        },
+        "netCore": {
+            "appProject": "${workspaceFolder}/logger.csproj"
+        }
+    },    
+    {
+        "type": "docker-run",
+        "label": "docker-run: debug",
+        "dependsOn": [
+            "docker-build: debug"
+        ],
+        "dockerRun": {
+            "env": {
+                "LOG_ROOT": "/usr/logs",
+                "ENV": "dev" 
+            },
+            "ports": 
+            [
+                { "containerPort": 4000, "hostPort": 4000, "protocol": "tcp" }
+            ]
+        },
+        "netCore": {
+            "appProject": "${workspaceFolder}/logger.csproj",
+            "enableDebugging": true
+        }
+    }    
+]
+}

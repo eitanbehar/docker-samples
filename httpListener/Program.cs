@@ -13,7 +13,7 @@ internal class Program
 
             Console.WriteLine($"Listening on {prefix}...");
 
-            var listener = new HttpListener();
+                    
             listener.Prefixes.Add(prefix);
 
             listener.Start();
